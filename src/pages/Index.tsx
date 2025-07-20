@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,15 +15,46 @@ import {
   Sun,
   Droplets,
   TrendingUp,
-  Satellite
+  Satellite,
+  Plus
 } from "lucide-react";
 import FarmMap from "@/components/FarmMap";
 import HealthAssessment from "@/components/HealthAssessment";
 import VegetationIndices from "@/components/VegetationIndices";
 import Marketplace from "@/components/Marketplace";
+import OnboardingWizard from "@/components/OnboardingWizard";
+import FieldMapper from "@/components/FieldMapper";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showFieldMapper, setShowFieldMapper] = useState(false);
+  const [userSetup, setUserSetup] = useState(false);
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    setShowFieldMapper(true);
+  };
+
+  const handleFieldMappingComplete = (fieldData: any) => {
+    console.log("Field mapping completed:", fieldData);
+    setShowFieldMapper(false);
+    setUserSetup(true);
+  };
+
+  const startNewFieldMapping = () => {
+    setShowFieldMapper(true);
+  };
+
+  // Show onboarding wizard if not set up
+  if (showOnboarding) {
+    return <OnboardingWizard onComplete={handleOnboardingComplete} />;
+  }
+
+  // Show field mapper
+  if (showFieldMapper) {
+    return <FieldMapper onComplete={handleFieldMappingComplete} />;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,6 +69,17 @@ const Index = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {!userSetup && (
+              <Button 
+                size="sm" 
+                variant="secondary"
+                onClick={() => setShowOnboarding(true)}
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-4 w-4" />
+                Setup
+              </Button>
+            )}
             <Bell className="h-5 w-5" />
             <Menu className="h-5 w-5" />
           </div>
@@ -65,6 +108,21 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Setup Banner for New Users */}
+      {!userSetup && (
+        <div className="bg-primary/10 border-b border-primary/20 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-primary">Welcome to Soil Saathi!</h3>
+              <p className="text-sm text-muted-foreground">Complete setup to start analyzing your fields</p>
+            </div>
+            <Button onClick={() => setShowOnboarding(true)} size="sm">
+              Get Started
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="p-4">
@@ -103,7 +161,7 @@ const Index = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Farm Health</p>
-                      <p className="text-xl font-bold">87%</p>
+                      <p className="text-xl font-bold">{userSetup ? '87%' : '--'}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -117,43 +175,56 @@ const Index = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Total Area</p>
-                      <p className="text-xl font-bold">2.5 ha</p>
+                      <p className="text-xl font-bold">{userSetup ? '2.5 ha' : '--'}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Recent Analysis */}
+            {/* Recent Analysis or Setup Prompt */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="h-5 w-5 text-primary" />
-                  Latest Analysis
+                  {userSetup ? 'Latest Analysis' : 'Getting Started'}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg">
-                    <div>
-                      <p className="font-medium">Satellite Data Updated</p>
-                      <p className="text-sm text-muted-foreground">NDVI: 0.75 (+5% improvement)</p>
+                {userSetup ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg">
+                      <div>
+                        <p className="font-medium">Satellite Data Updated</p>
+                        <p className="text-sm text-muted-foreground">NDVI: 0.75 (+5% improvement)</p>
+                      </div>
+                      <Badge className="bg-success/20 text-success">
+                        Good
+                      </Badge>
                     </div>
-                    <Badge className="bg-success/20 text-success">
-                      Good
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-warning/10 rounded-lg">
-                    <div>
-                      <p className="font-medium">Soil Moisture Alert</p>
-                      <p className="text-sm text-muted-foreground">North field needs irrigation</p>
+                    
+                    <div className="flex items-center justify-between p-3 bg-warning/10 rounded-lg">
+                      <div>
+                        <p className="font-medium">Soil Moisture Alert</p>
+                        <p className="text-sm text-muted-foreground">North field needs irrigation</p>
+                      </div>
+                      <Badge className="bg-warning/20 text-warning">
+                        Action Needed
+                      </Badge>
                     </div>
-                    <Badge className="bg-warning/20 text-warning">
-                      Action Needed
-                    </Badge>
                   </div>
-                </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Sprout className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="font-semibold mb-2">Welcome to Soil Saathi</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Complete the setup process to start monitoring your field health with satellite data
+                    </p>
+                    <Button onClick={() => setShowOnboarding(true)}>
+                      Complete Setup
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -167,10 +238,10 @@ const Index = () => {
                   <Button 
                     variant="outline" 
                     className="h-16 flex flex-col gap-1"
-                    onClick={() => setActiveTab("health")}
+                    onClick={() => userSetup ? setActiveTab("health") : setShowOnboarding(true)}
                   >
                     <Satellite className="h-5 w-5" />
-                    <span className="text-xs">New Analysis</span>
+                    <span className="text-xs">{userSetup ? 'New Analysis' : 'Setup First'}</span>
                   </Button>
                   <Button 
                     variant="outline" 
@@ -183,18 +254,18 @@ const Index = () => {
                   <Button 
                     variant="outline" 
                     className="h-16 flex flex-col gap-1"
-                    onClick={() => setActiveTab("map")}
+                    onClick={userSetup ? () => setActiveTab("map") : startNewFieldMapping}
                   >
                     <MapPin className="h-5 w-5" />
-                    <span className="text-xs">View Fields</span>
+                    <span className="text-xs">{userSetup ? 'View Fields' : 'Map Field'}</span>
                   </Button>
                   <Button 
                     variant="outline" 
                     className="h-16 flex flex-col gap-1"
-                    onClick={() => setActiveTab("indices")}
+                    onClick={() => userSetup ? setActiveTab("indices") : setShowOnboarding(true)}
                   >
                     <BarChart3 className="h-5 w-5" />
-                    <span className="text-xs">View Reports</span>
+                    <span className="text-xs">{userSetup ? 'View Reports' : 'Get Started'}</span>
                   </Button>
                 </div>
               </CardContent>
