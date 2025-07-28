@@ -106,6 +106,154 @@ All colors MUST be HSL.
   }
 }
 
+/* ===== ACCESSIBILITY FEATURES ===== */
+/* Support for low-literacy and rural users */
+
+/* Large button mode for touch targets */
+.large-buttons button, 
+.large-buttons [role="button"] {
+  min-height: 3rem;
+  min-width: 3rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+.large-buttons .h-16 {
+  height: 5rem;
+}
+
+/* High contrast mode */
+.high-contrast {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+  --primary: 0 0% 0%;
+  --primary-foreground: 0 0% 100%;
+  --muted: 0 0% 90%;
+  --muted-foreground: 0 0% 20%;
+  --border: 0 0% 50%;
+}
+
+.high-contrast.dark {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 0%;
+  --card-foreground: 0 0% 100%;
+  --primary: 0 0% 100%;
+  --primary-foreground: 0 0% 0%;
+}
+
+/* Low contrast mode for sensitive users */
+.low-contrast {
+  --foreground: 120 5% 35%;
+  --border: 120 5% 85%;
+  --muted-foreground: 120 3% 55%;
+}
+
+/* Color blind support */
+.color-blind-mode {
+  --success: 200 60% 45%;
+  --warning: 30 90% 55%;
+  --destructive: 330 70% 55%;
+}
+
+/* Simplified UI mode */
+.simplified-ui .shadow-lg {
+  box-shadow: none;
+}
+
+.simplified-ui .rounded-lg {
+  border-radius: 0.375rem;
+}
+
+.simplified-ui .border {
+  border-width: 2px;
+}
+
+/* Reduced motion for sensitive users */
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Custom font size support */
+.accessibility-font-size {
+  font-size: var(--accessibility-font-size, 16px);
+}
+
+/* Voice feedback states */
+.voice-listening {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Rural-friendly design patterns */
+.rural-friendly {
+  /* Larger touch targets */
+  button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Clear visual hierarchy */
+  h1, h2, h3 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* High contrast borders */
+  .border {
+    border-width: 2px;
+  }
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 640px) {
+  .grid-cols-7 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .grid-cols-7 > :nth-child(n+5) {
+    grid-column: span 2;
+  }
+  
+  /* Larger touch targets on mobile */
+  button, [role="button"] {
+    min-height: 48px;
+    padding: 0.75rem;
+  }
+  
+  /* Better text readability */
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+}
+
+/* Offline mode indicators */
+.offline-mode {
+  border-left: 4px solid hsl(var(--warning));
+  background: hsl(var(--warning) / 0.1);
+}
+
+.online-mode {
+  border-left: 4px solid hsl(var(--success));
+  background: hsl(var(--success) / 0.1);
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -113,5 +261,16 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    /* Support for rural users with variable internet */
+    font-display: swap;
+  }
+  
+  /* Focus indicators for keyboard navigation */
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
+    outline: 3px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
 }

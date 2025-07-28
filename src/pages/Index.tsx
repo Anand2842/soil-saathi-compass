@@ -16,7 +16,10 @@ import {
   Droplets,
   TrendingUp,
   Satellite,
-  Plus
+  Plus,
+  Headphones,
+  Settings,
+  Eye
 } from "lucide-react";
 import FarmMap from "@/components/FarmMap";
 import HealthAssessment from "@/components/HealthAssessment";
@@ -24,6 +27,8 @@ import VegetationIndices from "@/components/VegetationIndices";
 import Marketplace from "@/components/Marketplace";
 import OnboardingWizard from "@/components/OnboardingWizard";
 import FieldMapper from "@/components/FieldMapper";
+import VoiceAssistant from "@/components/VoiceAssistant";
+import AccessibilityFeatures from "@/components/AccessibilityFeatures";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -57,7 +62,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background rural-friendly large-buttons">
       {/* Header */}
       <header className="bg-primary text-primary-foreground p-4 shadow-lg">
         <div className="flex items-center justify-between">
@@ -127,7 +132,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-6">
+          <TabsList className="grid w-full grid-cols-7 mb-6">
             <TabsTrigger value="dashboard" className="flex flex-col gap-1 h-16">
               <Activity className="h-4 w-4" />
               <span className="text-xs">Dashboard</span>
@@ -147,6 +152,14 @@ const Index = () => {
             <TabsTrigger value="marketplace" className="flex flex-col gap-1 h-16">
               <ShoppingCart className="h-4 w-4" />
               <span className="text-xs">Market</span>
+            </TabsTrigger>
+            <TabsTrigger value="voice" className="flex flex-col gap-1 h-16">
+              <Headphones className="h-4 w-4" />
+              <span className="text-xs">Voice</span>
+            </TabsTrigger>
+            <TabsTrigger value="accessibility" className="flex flex-col gap-1 h-16">
+              <Eye className="h-4 w-4" />
+              <span className="text-xs">Access</span>
             </TabsTrigger>
           </TabsList>
 
@@ -286,6 +299,14 @@ const Index = () => {
 
           <TabsContent value="marketplace">
             <Marketplace />
+          </TabsContent>
+
+          <TabsContent value="voice">
+            <VoiceAssistant context={activeTab as any} />
+          </TabsContent>
+
+          <TabsContent value="accessibility">
+            <AccessibilityFeatures />
           </TabsContent>
         </Tabs>
       </div>
