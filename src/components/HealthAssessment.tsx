@@ -1,11 +1,17 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, AlertTriangle, CheckCircle, Droplets, Volume2, FileText, ShoppingCart, MapPin, Clock, TrendingUp } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle, Droplets, Volume2, FileText, ShoppingCart, MapPin, Clock, TrendingUp, RefreshCw, Brain } from "lucide-react";
+import { api, type FieldData, type FieldInsights } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const HealthAssessment = () => {
+  const [aiInsights, setAiInsights] = useState<FieldInsights | null>(null);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+  const { toast } = useToast();
   const healthMetrics = [
     { 
       name: "NDVI Health", 
@@ -95,12 +101,73 @@ const HealthAssessment = () => {
     console.log(`Playing audio ${audioId}`);
   };
 
+  const generateAIInsights = async () => {
+    setIsLoadingInsights(true);
+    try {
+      // Sample field data - in a real app, this would come from your state/props
+      const fieldData: FieldData = {
+        field_id: "field_001",
+        location: "Bhojpur, Bihar",
+        crop: "Paddy (Dhan)",
+        crop_stage: "Mid-season",
+        last_analysis_date: new Date().toISOString(),
+        health_zones: {
+          overall_ndvi: 0.45,
+          problem_areas: ["North-East corner"],
+          ndvi_trend: "decreasing"
+        },
+        weather: {
+          recent_rainfall_mm: 5,
+          temperature_celsius: 32
+        },
+        farmer_actions: {
+          last_irrigation: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+          last_fertilizer: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      };
+
+      const insights = await api.summarizeField(fieldData, 'hi');
+      setAiInsights(insights);
+      toast({
+        title: "AI Analysis Complete",
+        description: "Field insights generated successfully",
+      });
+    } catch (error) {
+      console.error('Failed to generate AI insights:', error);
+      toast({
+        title: "Analysis Failed",
+        description: "Unable to generate AI insights. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
+
+  useEffect(() => {
+    // Auto-generate insights on component mount
+    generateAIInsights();
+  }, []);
+
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Activity className="h-5 w-5 text-primary" />
           AI-Powered Health Assessment
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={generateAIInsights}
+            disabled={isLoadingInsights}
+          >
+            {isLoadingInsights ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              <Brain className="h-4 w-4" />
+            )}
+            {isLoadingInsights ? "Analyzing..." : "Refresh AI Analysis"}
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -113,6 +180,52 @@ const HealthAssessment = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            {/* AI Insights Section */}
+            {aiInsights && (
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <Brain className="h-5 w-5 text-blue-600" />
+                  <h3 className="text-lg font-semibold text-blue-900">AI Field Analysis</h3>
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                    Gemini Powered
+                  </Badge>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="bg-white p-4 rounded-lg border border-blue-100">
+                    <h4 className="font-semibold mb-2 text-blue-900">Summary:</h4>
+                    <p className="text-sm text-gray-700">{aiInsights.summary}</p>
+                  </div>
+                  
+                  <div className="bg-white p-4 rounded-lg border border-blue-100">
+                    <h4 className="font-semibold mb-2 text-blue-900">Diagnosis:</h4>
+                    <p className="text-sm text-gray-700">{aiInsights.diagnosis}</p>
+                  </div>
+                  
+                  {Array.isArray(aiInsights.recommendations) && aiInsights.recommendations.length > 0 && (
+                    <div className="bg-white p-4 rounded-lg border border-blue-100">
+                      <h4 className="font-semibold mb-2 text-blue-900">Recommendations:</h4>
+                      <ul className="text-sm space-y-2">
+                        {aiInsights.recommendations.map((rec, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="font-medium text-blue-600 mt-0.5">{index + 1}.</span>
+                            <span className="text-gray-700">{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {isLoadingInsights && (
+              <div className="text-center p-8 bg-gray-50 rounded-lg border border-gray-200">
+                <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-3 text-blue-600" />
+                <p className="text-gray-600">Generating AI insights from satellite data...</p>
+              </div>
+            )}
+
             {/* Enhanced Overall Health Score */}
             <div className="text-center p-6 bg-gradient-to-r from-success/10 to-success/5 rounded-lg border border-success/20">
               <div className="flex items-center justify-center gap-2 mb-2">
