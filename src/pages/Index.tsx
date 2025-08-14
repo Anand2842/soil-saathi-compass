@@ -20,7 +20,7 @@ import {
   Headphones,
   Settings,
   Eye,
-  PresentationChart,
+  Presentation,
   Target,
   Play
 } from "lucide-react";
@@ -139,10 +139,14 @@ const Index = () => {
       {/* Main Content */}
       <div className="p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-7 mb-6">
+          <TabsList className="grid w-full grid-cols-8 mb-6">
             <TabsTrigger value="dashboard" className="flex flex-col gap-1 h-16">
               <Activity className="h-4 w-4" />
               <span className="text-xs">Dashboard</span>
+            </TabsTrigger>
+            <TabsTrigger value="investor" className="flex flex-col gap-1 h-16">
+              <Presentation className="h-4 w-4" />
+              <span className="text-xs">Investor</span>
             </TabsTrigger>
             <TabsTrigger value="map" className="flex flex-col gap-1 h-16">
               <MapPin className="h-4 w-4" />
@@ -290,6 +294,10 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="investor">
+            <InvestorDashboard />
           </TabsContent>
 
           <TabsContent value="map">
