@@ -19,7 +19,10 @@ import {
   Plus,
   Headphones,
   Settings,
-  Eye
+  Eye,
+  PresentationChart,
+  Target,
+  Play
 } from "lucide-react";
 import FarmMap from "@/components/FarmMap";
 import HealthAssessment from "@/components/HealthAssessment";
@@ -29,12 +32,16 @@ import OnboardingWizard from "@/components/OnboardingWizard";
 import FieldMapper from "@/components/FieldMapper";
 import VoiceAssistant from "@/components/VoiceAssistant";
 import AccessibilityFeatures from "@/components/AccessibilityFeatures";
+import DemoModeToggle from "@/components/DemoModeToggle";
+import InvestorDashboard from "@/components/InvestorDashboard";
+import { type DemoScenario } from "@/data/demoData";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showFieldMapper, setShowFieldMapper] = useState(false);
   const [userSetup, setUserSetup] = useState(false);
+  const [currentDemoScenario, setCurrentDemoScenario] = useState<DemoScenario | null>(null);
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
