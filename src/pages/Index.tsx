@@ -34,6 +34,9 @@ import VoiceAssistant from "@/components/VoiceAssistant";
 import AccessibilityFeatures from "@/components/AccessibilityFeatures";
 import DemoModeToggle from "@/components/DemoModeToggle";
 import InvestorDashboard from "@/components/InvestorDashboard";
+import RealTimeMetrics from '@/components/RealTimeMetrics';
+import FinancialImpactTracker from '@/components/FinancialImpactTracker';
+import EnhancedMarketplace from '@/components/EnhancedMarketplace';
 import { type DemoScenario } from "@/data/demoData";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -495,7 +498,14 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="marketplace">
-            <Marketplace />
+            {currentDemoScenario ? (
+              <EnhancedMarketplace 
+                location={currentDemoScenario.farmer.location}
+                currentCrop={currentDemoScenario.fieldData.primaryCrop}
+              />
+            ) : (
+              <Marketplace />
+            )}
           </TabsContent>
 
           <TabsContent value="voice">
