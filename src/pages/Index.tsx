@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,9 @@ import AccessibilityFeatures from "@/components/AccessibilityFeatures";
 import DemoModeToggle from "@/components/DemoModeToggle";
 import InvestorDashboard from "@/components/InvestorDashboard";
 import { type DemoScenario } from "@/data/demoData";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getDemoFieldData, api } from "@/lib/api";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -42,6 +45,24 @@ const Index = () => {
   const [showFieldMapper, setShowFieldMapper] = useState(false);
   const [userSetup, setUserSetup] = useState(false);
   const [currentDemoScenario, setCurrentDemoScenario] = useState<DemoScenario | null>(null);
+  const [fieldData, setFieldData] = useState<any>(null);
+  const [insights, setInsights] = useState<any>(null);
+
+  // Auto-activate userSetup when demo mode is selected
+  useEffect(() => {
+    if (currentDemoScenario) {
+      setUserSetup(true);
+      // Load demo field data
+      const demoData = getDemoFieldData(
+        currentDemoScenario.farmer.location, 
+        currentDemoScenario.farmer.primaryCrop
+      );
+      setFieldData(demoData);
+      
+      // Get AI insights
+      api.summarizeField(demoData, 'hi').then(setInsights);
+    }
+  }, [currentDemoScenario]);
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
@@ -136,6 +157,14 @@ const Index = () => {
         </div>
       )}
 
+      {/* Demo Mode Toggle */}
+      <div className="p-4 border-b">
+        <DemoModeToggle 
+          currentScenario={currentDemoScenario}
+          onScenarioChange={setCurrentDemoScenario}
+        />
+      </div>
+
       {/* Main Content */}
       <div className="p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -175,8 +204,18 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-4">
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            {/* Weather Alert */}
+            {userSetup && (
+              <Alert className="border-warning bg-warning/5">
+                <Bell className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Weather Alert:</strong> Light rain expected in 2 days. Good time for fertilizer application.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Dynamic Stats based on demo data */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
@@ -185,7 +224,15 @@ const Index = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Farm Health</p>
-                      <p className="text-xl font-bold">{userSetup ? '87%' : '--'}</p>
+                      <p className="text-xl font-bold">
+                        {userSetup ? `${Math.round((fieldData?.health_zones?.overall_ndvi || 0.87) * 100)}%` : '--'}
+                      </p>
+                      {userSetup && (
+                        <Progress 
+                          value={(fieldData?.health_zones?.overall_ndvi || 0.87) * 100} 
+                          className="h-2 mt-1"
+                        />
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -199,47 +246,182 @@ const Index = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Total Area</p>
-                      <p className="text-xl font-bold">{userSetup ? '2.5 ha' : '--'}</p>
+                       <p className="text-xl font-bold">
+                        {userSetup ? `${currentDemoScenario?.farmer.farmSize || 2.5} ha` : '--'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-primary/10 p-2 rounded-lg">
+                      <Droplets className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Soil Moisture</p>
+                      <p className="text-xl font-bold">
+                        {userSetup ? `${fieldData?.weather?.recent_rainfall_mm || 25}mm` : '--'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-destructive/10 p-2 rounded-lg">
+                      <TrendingUp className="h-5 w-5 text-destructive" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Yield Boost</p>
+                      <p className="text-xl font-bold">
+                        {userSetup ? `+${currentDemoScenario?.beforeAfter?.after?.yield ? Math.round(((currentDemoScenario.beforeAfter.after.yield - currentDemoScenario.beforeAfter.before.yield) / currentDemoScenario.beforeAfter.before.yield) * 100) : 25}%` : '--'}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Recent Analysis or Setup Prompt */}
+            {/* AI Insights and Analysis */}
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Satellite className="h-5 w-5 text-primary" />
+                    Satellite Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userSetup ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg">
+                        <div>
+                          <p className="font-medium">NDVI Health Index</p>
+                          <p className="text-sm text-muted-foreground">
+                            {fieldData?.health_zones?.overall_ndvi?.toFixed(2) || '0.75'} (Healthy Growth)
+                          </p>
+                        </div>
+                        <Badge className="bg-success/20 text-success">
+                          Excellent
+                        </Badge>
+                      </div>
+                      
+                      {fieldData?.health_zones?.problem_areas?.map((issue: string, index: number) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-warning/10 rounded-lg">
+                          <div>
+                            <p className="font-medium">Issue Detected</p>
+                            <p className="text-sm text-muted-foreground">{issue}</p>
+                          </div>
+                          <Badge className="bg-warning/20 text-warning">
+                            Monitor
+                          </Badge>
+                        </div>
+                      ))}
+                      
+                      <div className="text-center pt-2">
+                        <Button size="sm" onClick={() => setActiveTab("health")}>
+                          View Full Report
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Satellite className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-sm text-muted-foreground">
+                        Complete setup to view satellite analysis
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-primary" />
+                    AI Recommendations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userSetup && insights ? (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-primary/10 rounded-lg">
+                        <p className="font-medium text-sm">{insights.diagnosis}</p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Recommended Actions:</p>
+                        {insights.recommendations?.slice(0, 3).map((rec: string, index: number) => (
+                          <div key={index} className="flex items-start gap-2 p-2 bg-accent/10 rounded">
+                            <div className="bg-accent text-accent-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                              {index + 1}
+                            </div>
+                            <p className="text-sm">{rec}</p>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="text-center pt-2">
+                        <Button size="sm" variant="outline" onClick={() => setActiveTab("marketplace")}>
+                          Shop Solutions
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Target className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-sm text-muted-foreground">
+                        {userSetup ? 'Loading AI recommendations...' : 'Complete setup to get personalized recommendations'}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Current Tasks & Activities */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="h-5 w-5 text-primary" />
-                  {userSetup ? 'Latest Analysis' : 'Getting Started'}
+                  Today's Tasks
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {userSetup ? (
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border-l-4 border-primary">
                       <div>
-                        <p className="font-medium">Satellite Data Updated</p>
-                        <p className="text-sm text-muted-foreground">NDVI: 0.75 (+5% improvement)</p>
+                        <p className="font-medium">Check irrigation system</p>
+                        <p className="text-sm text-muted-foreground">South field - due today</p>
                       </div>
-                      <Badge className="bg-success/20 text-success">
-                        Good
-                      </Badge>
+                      <Button size="sm" variant="outline">Mark Done</Button>
                     </div>
                     
-                    <div className="flex items-center justify-between p-3 bg-warning/10 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-warning/5 rounded-lg border-l-4 border-warning">
                       <div>
-                        <p className="font-medium">Soil Moisture Alert</p>
-                        <p className="text-sm text-muted-foreground">North field needs irrigation</p>
+                        <p className="font-medium">Apply fertilizer</p>
+                        <p className="text-sm text-muted-foreground">Based on soil analysis - high priority</p>
                       </div>
-                      <Badge className="bg-warning/20 text-warning">
-                        Action Needed
-                      </Badge>
+                      <Button size="sm" variant="outline">View Details</Button>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-success/5 rounded-lg border-l-4 border-success">
+                      <div>
+                        <p className="font-medium">Weather monitoring</p>
+                        <p className="text-sm text-muted-foreground">Rain forecast - prepare drainage</p>
+                      </div>
+                      <Button size="sm" variant="outline">Set Reminder</Button>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Sprout className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <Activity className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <h3 className="font-semibold mb-2">Welcome to Soil Saathi</h3>
                     <p className="text-sm text-muted-foreground mb-4">
                       Complete the setup process to start monitoring your field health with satellite data
