@@ -22,7 +22,8 @@ import {
   Eye,
   Presentation,
   Target,
-  Play
+  Play,
+  MessageCircle
 } from "lucide-react";
 import FarmMap from "@/components/FarmMap";
 import HealthAssessment from "@/components/HealthAssessment";
@@ -32,6 +33,8 @@ import OnboardingWizard from "@/components/OnboardingWizard";
 import FieldMapper from "@/components/FieldMapper";
 import VoiceAssistant from "@/components/VoiceAssistant";
 import AccessibilityFeatures from "@/components/AccessibilityFeatures";
+import SimpleFarmerInterface from "@/components/SimpleFarmerInterface";
+import WhatsAppIntegration from "@/components/WhatsAppIntegration";
 import DemoModeToggle from "@/components/DemoModeToggle";
 import InvestorDashboard from "@/components/InvestorDashboard";
 import RealTimeMetrics from '@/components/RealTimeMetrics';
@@ -50,6 +53,7 @@ const Index = () => {
   const [currentDemoScenario, setCurrentDemoScenario] = useState<DemoScenario | null>(null);
   const [fieldData, setFieldData] = useState<any>(null);
   const [insights, setInsights] = useState<any>(null);
+  const [isSimpleMode, setIsSimpleMode] = useState(false);
 
   // Auto-activate userSetup when demo mode is selected
   useEffect(() => {
@@ -93,34 +97,73 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background rural-friendly large-buttons">
-      {/* Header */}
-      <header className="bg-primary text-primary-foreground p-4 shadow-lg">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Sprout className="h-8 w-8" />
-            <div>
-              <h1 className="text-xl font-bold">Soil Saathi</h1>
-              <p className="text-sm opacity-90">Smart Farming Assistant</p>
+    <div className="min-h-screen bg-background">
+      {isSimpleMode ? (
+        <SimpleFarmerInterface 
+          farmerData={{
+            name: "राम कुमार",
+            location: "गाजीपुर, उत्तर प्रदेश",
+            cropHealth: "warning",
+            alerts: [
+              {
+                type: "pest",
+                message: "पत्ती में भूरे धब्बे दिख रहे हैं - तुरंत दवाई छिड़कें",
+                urgency: "high"
+              }
+            ],
+            todayActions: [
+              {
+                action: "कॉपर सल्फेट का छिड़काव करें",
+                cost: 250,
+                expectedROI: "+₹2,000 प्रति एकड़"
+              },
+              {
+                action: "यूरिया डालें (50 किलो प्रति एकड़)",
+                cost: 1200,
+                expectedROI: "+₹3,500 प्रति एकड़"
+              }
+            ],
+            monthlyROI: "+₹8,500"
+          }}
+        />
+      ) : (
+        <div className="rural-friendly large-buttons">
+          {/* Header */}
+          <header className="bg-primary text-primary-foreground p-4 shadow-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Sprout className="h-8 w-8" />
+                <div>
+                  <h1 className="text-xl font-bold">Soil Saathi</h1>
+                  <p className="text-sm opacity-90">Smart Farming Assistant</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setIsSimpleMode(true)}
+                  className="flex items-center gap-1"
+                >
+                  <Target className="h-4 w-4" />
+                  Simple
+                </Button>
+                {!userSetup && (
+                  <Button 
+                    size="sm" 
+                    variant="secondary"
+                    onClick={() => setShowOnboarding(true)}
+                    className="flex items-center gap-1"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Setup
+                  </Button>
+                )}
+                <Bell className="h-5 w-5" />
+                <Menu className="h-5 w-5" />
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {!userSetup && (
-              <Button 
-                size="sm" 
-                variant="secondary"
-                onClick={() => setShowOnboarding(true)}
-                className="flex items-center gap-1"
-              >
-                <Plus className="h-4 w-4" />
-                Setup
-              </Button>
-            )}
-            <Bell className="h-5 w-5" />
-            <Menu className="h-5 w-5" />
-          </div>
-        </div>
-      </header>
+          </header>
 
       {/* Weather Banner */}
       <div className="bg-accent/10 border-b border-accent/20 p-3">
@@ -171,7 +214,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-8 mb-6">
+          <TabsList className="grid w-full grid-cols-9 mb-6">
             <TabsTrigger value="dashboard" className="flex flex-col gap-1 h-16">
               <Activity className="h-4 w-4" />
               <span className="text-xs">Dashboard</span>
@@ -199,6 +242,10 @@ const Index = () => {
             <TabsTrigger value="voice" className="flex flex-col gap-1 h-16">
               <Headphones className="h-4 w-4" />
               <span className="text-xs">Voice</span>
+            </TabsTrigger>
+            <TabsTrigger value="whatsapp" className="flex flex-col gap-1 h-16">
+              <MessageCircle className="h-4 w-4" />
+              <span className="text-xs">WhatsApp</span>
             </TabsTrigger>
             <TabsTrigger value="accessibility" className="flex flex-col gap-1 h-16">
               <Eye className="h-4 w-4" />
@@ -512,11 +559,17 @@ const Index = () => {
             <VoiceAssistant context={activeTab as any} />
           </TabsContent>
 
+          <TabsContent value="whatsapp">
+            <WhatsAppIntegration />
+          </TabsContent>
+
           <TabsContent value="accessibility">
             <AccessibilityFeatures />
           </TabsContent>
         </Tabs>
       </div>
+        </div>
+      )}
     </div>
   );
 };
