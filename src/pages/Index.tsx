@@ -214,7 +214,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-9 mb-6">
+          <TabsList className="grid w-full grid-cols-10 mb-6">
             <TabsTrigger value="dashboard" className="flex flex-col gap-1 h-16">
               <Activity className="h-4 w-4" />
               <span className="text-xs">Dashboard</span>
@@ -234,6 +234,10 @@ const Index = () => {
             <TabsTrigger value="indices" className="flex flex-col gap-1 h-16">
               <BarChart3 className="h-4 w-4" />
               <span className="text-xs">Indices</span>
+            </TabsTrigger>
+            <TabsTrigger value="calculator" className="flex flex-col gap-1 h-16">
+              <Target className="h-4 w-4" />
+              <span className="text-xs">Calculator</span>
             </TabsTrigger>
             <TabsTrigger value="marketplace" className="flex flex-col gap-1 h-16">
               <ShoppingCart className="h-4 w-4" />
@@ -542,6 +546,10 @@ const Index = () => {
 
           <TabsContent value="indices">
             <VegetationIndices />
+          </TabsContent>
+
+          <TabsContent value="calculator">
+            <DoseCalculator />
           </TabsContent>
 
           <TabsContent value="marketplace">

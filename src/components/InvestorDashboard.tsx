@@ -308,6 +308,74 @@ const InvestorDashboard = () => {
         </TabsContent>
 
         <TabsContent value="projections" className="space-y-4">
+          {/* Enhanced Investor Pitch Section */}
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg text-blue-900">
+                <Target className="h-5 w-5" />
+                🎯 Key Investment Pitch Points
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-blue-800">Market Opportunity</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>• 146M farmers in India (86% smallholders)</li>
+                    <li>• $50B AgTech market by 2025</li>
+                    <li>• Only 2% adoption of precision farming</li>
+                    <li>• Government pushing digital agriculture</li>
+                  </ul>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-blue-800">Competitive Advantages</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>• Multi-language voice interface</li>
+                    <li>• Works without internet (offline mode)</li>
+                    <li>• Satellite + AI + Marketplace integration</li>
+                    <li>• Specific focus on smallholders</li>
+                  </ul>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-blue-800">Revenue Streams</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>• Subscription: ₹500-2000/farmer/year</li>
+                    <li>• Marketplace commission: 3-5%</li>
+                    <li>• Premium features: ₹100/analysis</li>
+                    <li>• B2B partnerships: Corporate deals</li>
+                  </ul>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-blue-800">Proven Impact</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>• 25% average yield improvement</li>
+                    <li>• 30% reduction in input costs</li>
+                    <li>• 20% water savings</li>
+                    <li>• 40% faster problem detection</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg border border-blue-200">
+                <h4 className="font-semibold text-blue-800 mb-2">🚀 Scaling Strategy</h4>
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <strong>Phase 1 (Year 1)</strong>
+                    <p>Bihar, UP focus - 50K farmers</p>
+                  </div>
+                  <div>
+                    <strong>Phase 2 (Year 2)</strong>
+                    <p>Pan-India - 500K farmers</p>
+                  </div>
+                  <div>
+                    <strong>Phase 3 (Year 3)</strong>
+                    <p>SEA expansion - 2M farmers</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader>

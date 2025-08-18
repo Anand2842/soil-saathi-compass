@@ -1,11 +1,125 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TrendingUp, TrendingDown, Minus, BarChart3, Calendar, Lightbulb, Target, Crop } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { TrendingUp, TrendingDown, Minus, BarChart3, Calendar, Lightbulb, Target, Crop, Info } from "lucide-react";
 
 const VegetationIndices = () => {
+  const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
+
+  const indexExplanations = {
+    NDVI: {
+      fullName: "Normalized Difference Vegetation Index",
+      hindiName: "सामान्यीकृत वनस्पति सूचकांक",
+      howItWorks: "NDVI uses red and near-infrared light reflection to measure plant health and chlorophyll content.",
+      formula: "NDVI = (NIR - Red) / (NIR + Red)",
+      uses: [
+        "🌱 Crop health monitoring",
+        "📈 Growth stage assessment", 
+        "💧 Irrigation planning",
+        "🎯 Fertilizer application timing"
+      ],
+      investorInfo: [
+        "Industry standard for crop monitoring",
+        "85% correlation with yield predictions",
+        "Reduces crop loss by 15-20%",
+        "Cost-effective precision farming"
+      ]
+    },
+    MSAVI2: {
+      fullName: "Modified Soil Adjusted Vegetation Index 2",
+      hindiName: "संशोधित मिट्टी समायोजित वनस्पति सूचकांक",
+      howItWorks: "MSAVI2 reduces soil background influence, making it ideal for early crop stages and sparse vegetation.",
+      formula: "Complex formula that adjusts for soil brightness",
+      uses: [
+        "🌾 Early crop detection",
+        "🔍 Low vegetation coverage analysis",
+        "🌱 Seedling stage monitoring",
+        "📊 Bare soil assessment"
+      ],
+      investorInfo: [
+        "Critical for early-season analysis",
+        "Enables timely interventions",
+        "Reduces input waste by 25%",
+        "Key differentiator in our technology"
+      ]
+    },
+    NDRE: {
+      fullName: "Normalized Difference Red Edge",
+      hindiName: "सामान्यीकृत अंतर लाल किनारा",
+      howItWorks: "NDRE is sensitive to chlorophyll content and nitrogen status, especially in dense vegetation.",
+      formula: "NDRE = (NIR - RedEdge) / (NIR + RedEdge)",
+      uses: [
+        "🍃 Nitrogen stress detection",
+        "🌿 Dense canopy analysis",
+        "⚗️ Chlorophyll content assessment",
+        "🔬 Precision fertilizer application"
+      ],
+      investorInfo: [
+        "Optimizes nitrogen use efficiency",
+        "Prevents over-fertilization",
+        "30% reduction in fertilizer costs",
+        "Premium feature for advanced users"
+      ]
+    },
+    NDMI: {
+      fullName: "Normalized Difference Moisture Index",
+      hindiName: "सामान्यीकृत नमी सूचकांक",
+      howItWorks: "NDMI measures plant water content and stress levels using near-infrared wavelengths.",
+      formula: "NDMI = (NIR - SWIR) / (NIR + SWIR)",
+      uses: [
+        "💧 Water stress monitoring",
+        "🌡️ Drought assessment",
+        "⏰ Irrigation timing",
+        "🚨 Early stress detection"
+      ],
+      investorInfo: [
+        "Critical for water-scarce regions",
+        "20% water savings demonstrated",
+        "Prevents crop stress damage",
+        "Essential for climate resilience"
+      ]
+    },
+    SOC_VIS: {
+      fullName: "Soil Organic Carbon Visible",
+      hindiName: "मिट्टी कार्बनिक कार्बन दृश्य",
+      howItWorks: "Uses visible spectrum to estimate soil organic carbon content in bare fields.",
+      formula: "Proprietary algorithm using RGB bands",
+      uses: [
+        "🌍 Soil health assessment",
+        "🔄 Carbon sequestration monitoring",
+        "📋 Soil quality mapping",
+        "🌾 Post-harvest analysis"
+      ],
+      investorInfo: [
+        "Supports carbon credit programs",
+        "ESG compliance monitoring",
+        "Soil degradation prevention",
+        "Future revenue from carbon markets"
+      ]
+    },
+    RVI: {
+      fullName: "Radar Vegetation Index",
+      hindiName: "रडार वनस्पति सूचकांक",
+      howItWorks: "Uses radar signals to measure vegetation through clouds and in all weather conditions.",
+      formula: "RVI = 4 * HV / (HH + HV)",
+      uses: [
+        "☁️ All-weather monitoring",
+        "🌧️ Monsoon season analysis",
+        "📡 Cloud-penetrating assessment",
+        "🔄 Continuous monitoring"
+      ],
+      investorInfo: [
+        "Year-round data availability",
+        "Weather-independent monitoring",
+        "Unique competitive advantage",
+        "Essential for Indian agriculture"
+      ]
+    }
+  };
   // Enhanced indices with growth stage context and recommendations
   const indices = [
     { 
@@ -167,6 +281,56 @@ const VegetationIndices = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-semibold">{index.name}</h4>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setSelectedIndex(index.name)}>
+                            <Info className="h-3 w-3" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                              <BarChart3 className="h-5 w-5 text-primary" />
+                              {index.name} - Detailed Information
+                            </DialogTitle>
+                          </DialogHeader>
+                          {selectedIndex && indexExplanations[selectedIndex as keyof typeof indexExplanations] && (
+                            <div className="space-y-4">
+                              <div>
+                                <h4 className="font-semibold text-primary mb-2">Full Name</h4>
+                                <p>{indexExplanations[selectedIndex as keyof typeof indexExplanations].fullName}</p>
+                                <p className="text-sm text-muted-foreground">{indexExplanations[selectedIndex as keyof typeof indexExplanations].hindiName}</p>
+                              </div>
+                              
+                              <div>
+                                <h4 className="font-semibold text-primary mb-2">How It Works</h4>
+                                <p className="text-sm">{indexExplanations[selectedIndex as keyof typeof indexExplanations].howItWorks}</p>
+                                <p className="text-xs text-muted-foreground mt-1 font-mono bg-muted p-2 rounded">
+                                  {indexExplanations[selectedIndex as keyof typeof indexExplanations].formula}
+                                </p>
+                              </div>
+                              
+                              <div>
+                                <h4 className="font-semibold text-primary mb-2">Agricultural Uses</h4>
+                                <ul className="space-y-1">
+                                  {indexExplanations[selectedIndex as keyof typeof indexExplanations].uses.map((use, i) => (
+                                    <li key={i} className="text-sm">{use}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              
+                              <div className="bg-blue-50 p-4 rounded-lg">
+                                <h4 className="font-semibold text-blue-900 mb-2">💼 Investor Key Points</h4>
+                                <ul className="space-y-1">
+                                  {indexExplanations[selectedIndex as keyof typeof indexExplanations].investorInfo.map((info, i) => (
+                                    <li key={i} className="text-sm text-blue-800">• {info}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          )}
+                        </DialogContent>
+                      </Dialog>
                       <Badge className={getStatusColor(index.status)} variant="secondary">
                         {index.status}
                       </Badge>

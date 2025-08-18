@@ -193,26 +193,46 @@ const HealthAssessment = () => {
                 
                 <div className="space-y-4">
                   <div className="bg-white p-4 rounded-lg border border-blue-100">
-                    <h4 className="font-semibold mb-2 text-blue-900">Summary:</h4>
-                    <p className="text-sm text-gray-700">{aiInsights.summary}</p>
+                    <h4 className="font-semibold mb-2 text-blue-900 flex items-center gap-2">
+                      📊 Summary:
+                    </h4>
+                    <div className="text-sm text-gray-700 leading-relaxed">
+                      {aiInsights.summary}
+                    </div>
                   </div>
                   
                   <div className="bg-white p-4 rounded-lg border border-blue-100">
-                    <h4 className="font-semibold mb-2 text-blue-900">Diagnosis:</h4>
-                    <p className="text-sm text-gray-700">{aiInsights.diagnosis}</p>
+                    <h4 className="font-semibold mb-3 text-blue-900 flex items-center gap-2">
+                      🔍 Diagnosis:
+                    </h4>
+                    <div className="text-sm text-gray-700">
+                      {typeof aiInsights.diagnosis === 'string' ? 
+                        aiInsights.diagnosis.split('.').filter(d => d.trim()).map((point, index) => (
+                          <div key={index} className="flex items-start gap-2 mb-2">
+                            <span className="font-medium text-blue-600 mt-0.5">•</span>
+                            <span>{point.trim()}.</span>
+                          </div>
+                        )) :
+                        <div>{aiInsights.diagnosis}</div>
+                      }
+                    </div>
                   </div>
                   
                   {Array.isArray(aiInsights.recommendations) && aiInsights.recommendations.length > 0 && (
                     <div className="bg-white p-4 rounded-lg border border-blue-100">
-                      <h4 className="font-semibold mb-2 text-blue-900">Recommendations:</h4>
-                      <ul className="text-sm space-y-2">
+                      <h4 className="font-semibold mb-3 text-blue-900 flex items-center gap-2">
+                        💡 Action Plan:
+                      </h4>
+                      <div className="space-y-3">
                         {aiInsights.recommendations.map((rec, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <span className="font-medium text-blue-600 mt-0.5">{index + 1}.</span>
-                            <span className="text-gray-700">{rec}</span>
-                          </li>
+                          <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+                            <span className="bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center mt-0.5">
+                              {index + 1}
+                            </span>
+                            <span className="text-gray-700 flex-1">{rec}</span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </div>

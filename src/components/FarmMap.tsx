@@ -30,6 +30,15 @@ const FarmMap = () => {
       resolution: "10m", 
       status: "radar",
       quality: 90
+    },
+    { 
+      source: "NISAR (Upcoming)", 
+      date: "2024-12-01", 
+      cloudCover: 0, 
+      resolution: "3m", 
+      status: "upcoming",
+      quality: 98,
+      note: "NASA-ISRO mission launching Dec 2024"
     }
   ];
 
@@ -49,7 +58,8 @@ const FarmMap = () => {
     const styles = {
       excellent: "bg-success/20 text-success",
       good: "bg-accent/20 text-accent", 
-      radar: "bg-primary/20 text-primary"
+      radar: "bg-primary/20 text-primary",
+      upcoming: "bg-purple-100 text-purple-700"
     };
     return styles[status] || "bg-muted/20 text-muted-foreground";
   };
@@ -121,7 +131,7 @@ const FarmMap = () => {
                 <div className="text-center z-10">
                   <Satellite className="h-12 w-12 text-primary mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">Health-Coded Field Map</p>
-                  <p className="text-xs text-muted-foreground">GPS: 28.6139°N, 77.2090°E</p>
+                  <p className="text-xs text-muted-foreground">GPS: 25.5941°N, 85.1376°E (Patna, Bihar)</p>
                 </div>
               </div>
 
@@ -175,6 +185,12 @@ const FarmMap = () => {
                       <p className="font-medium">{data.quality}%</p>
                     </div>
                   </div>
+                  
+                   {data.note && (
+                     <div className="text-xs text-purple-600 bg-purple-50 p-2 rounded mt-2">
+                       📡 {data.note}
+                     </div>
+                   )}
                 </div>
               ))}
             </div>
