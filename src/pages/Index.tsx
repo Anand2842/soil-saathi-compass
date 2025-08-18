@@ -40,6 +40,7 @@ import InvestorDashboard from "@/components/InvestorDashboard";
 import RealTimeMetrics from '@/components/RealTimeMetrics';
 import FinancialImpactTracker from '@/components/FinancialImpactTracker';
 import EnhancedMarketplace from '@/components/EnhancedMarketplace';
+import DoseCalculator from '@/components/DoseCalculator';
 import { type DemoScenario } from "@/data/demoData";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
