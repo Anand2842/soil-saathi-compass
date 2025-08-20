@@ -153,21 +153,9 @@ const HealthAssessment = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Activity className="h-5 w-5 text-primary" />
-          AI-Powered Health Assessment
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={generateAIInsights}
-            disabled={isLoadingInsights}
-          >
-            {isLoadingInsights ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <Brain className="h-4 w-4" />
-            )}
-            {isLoadingInsights ? "Analyzing..." : "Refresh AI Analysis"}
-          </Button>
+          <Activity className="h-5 w-5" />
+          Field Health Assessment
+          <Badge variant="outline" className="text-xs bg-primary/10 text-primary">NISAR-Ready</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>

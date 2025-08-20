@@ -1,9 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Satellite, TrendingUp, Cloud, CloudRain, Sun, Calendar, Download, RefreshCw } from "lucide-react";
+import { Cloud, CloudRain, Sun, Zap, CheckCircle, XCircle, AlertCircle, Satellite, ExternalLink, MapPin, RefreshCw, Download, Calendar } from "lucide-react";
+import MapBihar from "./MapBihar";
 
 const FarmMap = () => {
   const satelliteData = [
@@ -86,13 +87,18 @@ const FarmMap = () => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="map" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="map">Field Map</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="map">Real Map (Bihar)</TabsTrigger>
+            <TabsTrigger value="conceptual">Conceptual Map</TabsTrigger>
             <TabsTrigger value="satellite">Satellite Data</TabsTrigger>
             <TabsTrigger value="zones">Health Zones</TabsTrigger>
           </TabsList>
 
           <TabsContent value="map" className="space-y-4">
+            <MapBihar />
+          </TabsContent>
+
+          <TabsContent value="conceptual" className="space-y-4">
             {/* Enhanced Map Visualization */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -154,6 +160,77 @@ const FarmMap = () => {
           </TabsContent>
 
           <TabsContent value="satellite" className="space-y-4">
+            {/* NISAR Upcoming Section */}
+            <Card className="border-2 border-dashed border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Satellite className="h-6 w-6 text-primary" />
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        NISAR (Upcoming)
+                        <Badge variant="secondary" className="bg-primary/10 text-primary">Coming Soon</Badge>
+                      </CardTitle>
+                      <CardDescription>NASA-ISRO L/S-band SAR Satellite Mission</CardDescription>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2">What is NISAR?</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• NASA-ISRO collaborative mission</li>
+                        <li>• L-band & S-band SAR (all-weather imaging)</li>
+                        <li>• 12-day repeat cycle, day-night coverage</li>
+                        <li>• Penetrates clouds, works during monsoon</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2">Why Farmers Care?</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• Reliable observations during cloudy weather</li>
+                        <li>• Better soil moisture & biomass signals</li>
+                        <li>• Earlier stress detection (7-10 days advance)</li>
+                        <li>• More accurate zone mapping</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="border-t pt-4">
+                    <h4 className="font-semibold text-sm mb-2">How it improves Soil Saathi:</h4>
+                    <div className="grid md:grid-cols-3 gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <span>Higher alert reliability</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <span>Reduced false positives</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <span>More stable AI confidence</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t">
+                    <Badge variant="outline" className="text-xs">Expected Launch: 2024-2025</Badge>
+                    <a 
+                      href="https://nisar.jpl.nasa.gov/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-sm text-primary hover:underline"
+                    >
+                      Learn more <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Existing Satellite Data */}
             <div className="space-y-3">
               {satelliteData.map((data, index) => (
                 <div key={index} className="border rounded-lg p-3 space-y-2">
