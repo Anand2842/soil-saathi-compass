@@ -29,6 +29,13 @@ const MapBihar = () => {
 
   const initializeMap = (token: string) => {
     if (!mapContainer.current || !token) return;
+    
+    // Safety check: Only allow public tokens (pk.*), not secret tokens (sk.*)
+    if (!token.startsWith('pk.')) {
+      console.error('Invalid Mapbox token: Use a public token (pk.*), not a secret token (sk.*)');
+      setNeedsToken(true);
+      return;
+    }
 
     mapboxgl.accessToken = token;
     
