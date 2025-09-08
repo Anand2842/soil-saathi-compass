@@ -274,3 +274,10 @@ All colors MUST be HSL.
     outline-offset: 2px;
   }
 }
+
+/* Custom utilities for demo visualizations */
+@layer utilities {
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+}

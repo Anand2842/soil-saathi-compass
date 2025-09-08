@@ -223,38 +223,128 @@ const MapBihar = () => {
 
   if (needsToken) {
     return (
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <MapPin className="h-5 w-5" />
-          <h3 className="text-lg font-semibold">Bihar Field Map Setup</h3>
-        </div>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="mapbox-token">Mapbox Public Token</Label>
-            <Input
-              id="mapbox-token"
-              type="text"
-              placeholder="pk.eyJ1Ijoi... (your Mapbox public token)"
-              value={mapboxToken}
-              onChange={(e) => setMapboxToken(e.target.value)}
-              className="mt-1"
-            />
-            <p className="text-sm text-muted-foreground mt-2">
-              Get your free public token from{' '}
-              <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                mapbox.com
-              </a>
-              {' '}→ Account → Access Tokens
-            </p>
+      <div className="space-y-4">
+        {/* Demo Mode Fallback */}
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <MapPin className="h-5 w-5" />
+            <h3 className="text-lg font-semibold">Bihar Field Map - Demo Mode</h3>
           </div>
-          <Button 
-            onClick={() => mapboxToken && setNeedsToken(false)}
-            disabled={!mapboxToken.trim()}
-          >
-            Load Map
-          </Button>
-        </div>
-      </Card>
+          
+          {/* Demo Map Visualization */}
+          <div className="bg-gradient-to-br from-green-100 to-amber-100 rounded-lg h-[400px] relative overflow-hidden">
+            {/* Background pattern to simulate satellite imagery */}
+            <div className="absolute inset-0 opacity-20" style={{
+              backgroundImage: `repeating-linear-gradient(45deg, #10b981 0px, #10b981 2px, transparent 2px, transparent 8px)`
+            }}></div>
+            
+            {/* Demo field boundary */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="w-32 h-24 border-4 border-amber-500 rounded-lg bg-amber-200/50 relative">
+                <div className="absolute -top-8 left-0 bg-amber-500 text-white px-2 py-1 rounded text-sm font-semibold">
+                  Demo Field - Pusa
+                </div>
+                <div className="absolute top-2 right-2 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                <div className="absolute bottom-2 left-2 text-xs bg-white/80 px-1 rounded">
+                  78% Health
+                </div>
+              </div>
+            </div>
+            
+            {/* Demo NDVI heatmap overlay */}
+            <div className="absolute inset-0 bg-gradient-radial from-green-300/30 via-yellow-300/20 to-red-300/10 opacity-60"></div>
+            
+            {/* Location marker */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <MapPin className="h-6 w-6 text-green-600 drop-shadow-lg" />
+            </div>
+            
+            {/* Demo coordinates */}
+            <div className="absolute bottom-4 left-4 bg-white/90 px-3 py-2 rounded-lg text-sm">
+              <div className="font-semibold">Pusa, Samastipur, Bihar</div>
+              <div className="text-muted-foreground text-xs">25.9848°N, 85.6709°E</div>
+            </div>
+            
+            {/* Demo scale */}
+            <div className="absolute bottom-4 right-4 bg-white/90 px-2 py-1 rounded text-xs">
+              2.1 acres
+            </div>
+          </div>
+          
+          {/* Demo Controls */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div className="flex items-center space-x-2">
+              <Switch checked={showBoundary} onCheckedChange={setShowBoundary} />
+              <Label>Field Boundary</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch checked={showNDVIOverlay} onCheckedChange={setShowNDVIOverlay} />
+              <Label>NDVI Heatmap</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Settings className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Demo Mode</span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Map Legend */}
+        <Card className="p-4">
+          <h4 className="font-semibold mb-2">Map Legend</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-amber-500 rounded"></div>
+              <span>Field Boundary (78% Health)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-500 rounded"></div>
+              <span>High NDVI (0.7-0.8)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+              <span>Medium NDVI (0.5-0.7)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-red-500 rounded"></div>
+              <span>Low NDVI (0.3-0.5)</span>
+            </div>
+          </div>
+          
+          {/* Option to enter Mapbox token */}
+          <div className="mt-4 pt-4 border-t">
+            <details className="group">
+              <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
+                Want to see real satellite imagery? Add your Mapbox token
+              </summary>
+              <div className="mt-2 space-y-2">
+                <Label htmlFor="mapbox-token">Mapbox Public Token</Label>
+                <Input
+                  id="mapbox-token"
+                  type="text"
+                  placeholder="pk.eyJ1Ijoi... (your Mapbox public token)"
+                  value={mapboxToken}
+                  onChange={(e) => setMapboxToken(e.target.value)}
+                  className="text-xs"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Get your free public token from{' '}
+                  <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    mapbox.com
+                  </a>
+                  {' '}→ Account → Access Tokens
+                </p>
+                <Button 
+                  size="sm"
+                  onClick={() => mapboxToken && setNeedsToken(false)}
+                  disabled={!mapboxToken.trim()}
+                >
+                  Load Real Map
+                </Button>
+              </div>
+            </details>
+          </div>
+        </Card>
+      </div>
     );
   }
 
