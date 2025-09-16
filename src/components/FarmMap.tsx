@@ -5,6 +5,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Cloud, CloudRain, Sun, Zap, CheckCircle, XCircle, AlertCircle, Satellite, ExternalLink, MapPin, RefreshCw, Download, Calendar } from "lucide-react";
 import GoogleMap from "./GoogleMap";
+import EnhancedFieldMapper from "./EnhancedFieldMapper";
+import LocationSearch from "./LocationSearch";
+import StreetViewPanel from "./StreetViewPanel";
 
 const FarmMap = () => {
   const satelliteData = [
@@ -87,8 +90,9 @@ const FarmMap = () => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="map" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="map">Bihar Field Map</TabsTrigger>
+            <TabsTrigger value="mapper">Field Mapper Pro</TabsTrigger>
             <TabsTrigger value="conceptual">Conceptual Map</TabsTrigger>
             <TabsTrigger value="satellite">Satellite Data</TabsTrigger>
             <TabsTrigger value="zones">Health Zones</TabsTrigger>
@@ -96,6 +100,13 @@ const FarmMap = () => {
 
           <TabsContent value="map" className="space-y-4">
             <GoogleMap />
+          </TabsContent>
+
+          <TabsContent value="mapper" className="space-y-4">
+            <EnhancedFieldMapper onComplete={(fieldData) => {
+              console.log('Field mapping completed:', fieldData);
+              // Handle field data saving here
+            }} />
           </TabsContent>
 
           <TabsContent value="conceptual" className="space-y-4">
