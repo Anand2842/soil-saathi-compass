@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,8 @@ import {
   Presentation,
   Target,
   Play,
-  MessageCircle
+  MessageCircle,
+  LogOut
 } from "lucide-react";
 import FarmMap from "@/components/FarmMap";
 import HealthAssessment from "@/components/HealthAssessment";
@@ -45,9 +47,47 @@ import { type DemoScenario } from "@/data/demoData";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getDemoFieldData, api } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const { user, loading, signOut, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect to auth if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate('/auth');
+    }
+  }, [loading, isAuthenticated, navigate]);
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error('Failed to sign out');
+    } else {
+      toast.success('Signed out successfully');
+      navigate('/auth');
+    }
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <Sprout className="h-12 w-12 animate-pulse text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading Soil Saathi...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return null;
+  }
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showFieldMapper, setShowFieldMapper] = useState(false);
   const [userSetup, setUserSetup] = useState(false);
@@ -98,6 +138,39 @@ const Index = () => {
   }
 
   return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+      {/* Header with authentication info */}
+      <div className="bg-white/80 backdrop-blur-sm border-b sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-primary rounded-full flex items-center justify-center">
+                <Sprout className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-primary">Soil Saathi</h1>
+                <p className="text-sm text-muted-foreground">AI-Powered Field Diagnostics</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-muted-foreground">
+                Welcome, {user?.email?.split('@')[0] || 'Farmer'}
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSignOut}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="p-4">
     <div className="min-h-screen bg-background">
       {isSimpleMode ? (
         <SimpleFarmerInterface 
@@ -576,11 +649,9 @@ const Index = () => {
             <AccessibilityFeatures />
           </TabsContent>
         </Tabs>
-      </div>
         </div>
-      )}
-    </div>
-  );
-};
+      </div>
+    );
+  };
 
 export default Index;

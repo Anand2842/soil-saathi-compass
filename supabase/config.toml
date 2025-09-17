@@ -2,3 +2,9 @@ project_id = "ylzscfeppxkgnmyvgqtc"
 
 [functions.summarize-field]
 verify_jwt = false
+
+[functions.gee-analysis]
+verify_jwt = false
+
+[functions.enhanced-field-summary]
+verify_jwt = false
