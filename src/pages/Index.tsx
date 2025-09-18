@@ -24,8 +24,7 @@ import {
   Presentation,
   Target,
   Play,
-  MessageCircle,
-  LogOut
+  MessageCircle
 } from "lucide-react";
 import FarmMap from "@/components/FarmMap";
 import HealthAssessment from "@/components/HealthAssessment";
@@ -47,12 +46,10 @@ import { type DemoScenario } from "@/data/demoData";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getDemoFieldData, api } from "@/lib/api";
-import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const { user, loading, signOut, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
   // All state declarations must be at the top before any early returns
@@ -64,39 +61,9 @@ const Index = () => {
   const [insights, setInsights] = useState<any>(null);
   const [isSimpleMode, setIsSimpleMode] = useState(false);
 
-  // Redirect to auth if not authenticated
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      navigate('/auth');
-    }
-  }, [loading, isAuthenticated, navigate]);
-
-  const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (error) {
-      toast.error('Failed to sign out');
-    } else {
-      toast.success('Signed out successfully');
-      navigate('/auth');
-    }
+  const handleCreateField = () => {
+    setShowFieldMapper(true);
   };
-
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <Sprout className="h-12 w-12 animate-pulse text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading Soil Saathi...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render anything if not authenticated (will redirect)
-  if (!isAuthenticated) {
-    return null;
-  }
 
   // Auto-activate userSetup when demo mode is selected
   useEffect(() => {
@@ -156,17 +123,8 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="text-sm text-muted-foreground">
-                Welcome, {user?.email?.split('@')[0] || 'Farmer'}
+                Welcome to Soil Saathi
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleSignOut}
-                className="flex items-center gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                Sign Out
-              </Button>
             </div>
           </div>
         </div>
