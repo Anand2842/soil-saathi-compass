@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Cloud, CloudRain, Sun, Zap, CheckCircle, XCircle, AlertCircle, Satellite, ExternalLink, MapPin, RefreshCw, Download, Calendar } from "lucide-react";
-import GoogleMap from "./GoogleMap";
+import SatelliteMap from "./SatelliteMap";
 import EnhancedFieldMapper from "./EnhancedFieldMapper";
 import LocationSearch from "./LocationSearch";
 import StreetViewPanel from "./StreetViewPanel";
@@ -99,7 +99,14 @@ const FarmMap = () => {
           </TabsList>
 
           <TabsContent value="map" className="space-y-4">
-            <GoogleMap />
+            <div className="h-96">
+              <SatelliteMap 
+                center={[85.1376, 25.5941]} // Patna, Bihar coordinates
+                zoom={16}
+                style="mapbox://styles/mapbox/satellite-v9"
+                className="w-full h-full"
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="mapper" className="space-y-4">

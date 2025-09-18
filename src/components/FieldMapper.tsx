@@ -18,6 +18,7 @@ import {
   Loader2,
   Sprout
 } from "lucide-react";
+import SatelliteMap from "./SatelliteMap";
 import { fieldService } from "@/lib/fieldService";
 import { toast } from "sonner";
 
@@ -327,33 +328,35 @@ const FieldMapper = ({ onComplete }: { onComplete: (fieldData: any) => void }) =
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Satellite className="h-5 w-5" />
-                  Satellite Map
+                  Satellite Field Mapping
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="bg-muted rounded-lg h-64 flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-success/20 to-accent/20"></div>
-                  <div className="text-center z-10">
-                    <Target className="h-12 w-12 text-primary mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">Tap to mark field corners</p>
-                    <p className="text-xs text-muted-foreground">
-                      Satellite imagery loading...
-                    </p>
-                  </div>
-                  
-                  {/* Mock field markers */}
-                  <div className="absolute top-8 left-8 w-3 h-3 bg-primary rounded-full border-2 border-white"></div>
-                  <div className="absolute top-12 right-12 w-3 h-3 bg-primary rounded-full border-2 border-white"></div>
-                  <div className="absolute bottom-8 left-16 w-3 h-3 bg-primary rounded-full border-2 border-white"></div>
-                  <div className="absolute bottom-12 right-8 w-3 h-3 bg-primary rounded-full border-2 border-white"></div>
+                <div className="h-64">
+                  <SatelliteMap 
+                    center={[77.2090, 28.6139]} // Default Delhi coordinates
+                    zoom={18}
+                    style="mapbox://styles/mapbox/satellite-v9"
+                    enableFieldMapping={true}
+                    onFieldSelect={(fieldData) => {
+                      setFieldArea(fieldData.area);
+                      console.log('Field selected:', fieldData);
+                    }}
+                    className="w-full h-full"
+                  />
                 </div>
                 
                 <div className="flex justify-between items-center mt-3 text-sm">
-                  <span>Corners marked: 4</span>
-                  <Badge className="bg-success/10 text-success">
-                    1.8 hectares
-                  </Badge>
+                  <span>Interactive satellite mapping</span>
+                  {fieldArea > 0 && (
+                    <Badge className="bg-success/10 text-success">
+                      {fieldArea.toFixed(2)} hectares
+                    </Badge>
+                  )}
                 </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Click on the satellite map to mark field corners. Drag markers to adjust position.
+                </p>
               </CardContent>
             </Card>
           </div>
