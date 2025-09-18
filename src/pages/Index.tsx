@@ -54,6 +54,15 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { user, loading, signOut, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  
+  // All state declarations must be at the top before any early returns
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showFieldMapper, setShowFieldMapper] = useState(false);
+  const [userSetup, setUserSetup] = useState(false);
+  const [currentDemoScenario, setCurrentDemoScenario] = useState<DemoScenario | null>(null);
+  const [fieldData, setFieldData] = useState<any>(null);
+  const [insights, setInsights] = useState<any>(null);
+  const [isSimpleMode, setIsSimpleMode] = useState(false);
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -88,13 +97,6 @@ const Index = () => {
   if (!isAuthenticated) {
     return null;
   }
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showFieldMapper, setShowFieldMapper] = useState(false);
-  const [userSetup, setUserSetup] = useState(false);
-  const [currentDemoScenario, setCurrentDemoScenario] = useState<DemoScenario | null>(null);
-  const [fieldData, setFieldData] = useState<any>(null);
-  const [insights, setInsights] = useState<any>(null);
-  const [isSimpleMode, setIsSimpleMode] = useState(false);
 
   // Auto-activate userSetup when demo mode is selected
   useEffect(() => {
