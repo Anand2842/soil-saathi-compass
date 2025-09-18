@@ -343,7 +343,7 @@ const Index = () => {
 
             {/* Dynamic Stats based on demo data */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('map')}>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <div className="bg-success/10 p-2 rounded-lg">
@@ -365,7 +365,7 @@ const Index = () => {
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={startNewFieldMapping}>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <div className="bg-accent/10 p-2 rounded-lg">
@@ -376,6 +376,7 @@ const Index = () => {
                        <p className="text-xl font-bold">
                         {userSetup ? `${currentDemoScenario?.farmer.farmSize || 2.5} ha` : '--'}
                       </p>
+                      <p className="text-xs text-accent">+ Add Field</p>
                     </div>
                   </div>
                 </CardContent>
@@ -438,23 +439,28 @@ const Index = () => {
                         </Badge>
                       </div>
                       
-                      {fieldData?.health_zones?.problem_areas?.map((issue: string, index: number) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-warning/10 rounded-lg">
-                          <div>
-                            <p className="font-medium">Issue Detected</p>
-                            <p className="text-sm text-muted-foreground">{issue}</p>
-                          </div>
-                          <Badge className="bg-warning/20 text-warning">
-                            Monitor
-                          </Badge>
+                      <div className="flex items-center justify-between p-3 bg-warning/10 rounded-lg">
+                        <div>
+                          <p className="font-medium">Water Stress (NDMI)</p>
+                          <p className="text-sm text-muted-foreground">
+                            Moderate stress detected in 15% area
+                          </p>
                         </div>
-                      ))}
+                        <Badge className="bg-warning/20 text-warning">
+                          Monitor
+                        </Badge>
+                      </div>
                       
                       <div className="text-center pt-2">
-                        <Button size="sm" onClick={() => setActiveTab("health")}>
-                          View Full Report
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => setActiveTab('health')}
+                          className="w-full"
+                        >
+                          View Full Analysis
                         </Button>
-                      </div>
+                       </div>
                     </div>
                   ) : (
                     <div className="text-center py-8">

@@ -54,6 +54,22 @@ serve(async (req) => {
 
     console.log(`Starting GEE analysis for field ${fieldId} by user ${user.id}`);
 
+    // Get GEE service account key
+    const serviceAccountKey = Deno.env.get('GEE_SERVICE_ACCOUNT_KEY');
+    
+    if (serviceAccountKey) {
+      try {
+        const serviceAccount = JSON.parse(serviceAccountKey);
+        console.log('GEE service account loaded successfully');
+        // TODO: Implement actual Google Earth Engine API integration here
+        // For now, we'll use enhanced simulation
+      } catch (error) {
+        console.error('Invalid service account key format:', error);
+      }
+    } else {
+      console.warn('GEE_SERVICE_ACCOUNT_KEY not found, using simulation mode');
+    }
+
     // For now, simulate GEE analysis with realistic values based on crop type and date
     const currentDate = analysisDate ? new Date(analysisDate) : new Date();
     const analysisResults = await simulateGEEAnalysis(boundary, cropType, currentDate);
