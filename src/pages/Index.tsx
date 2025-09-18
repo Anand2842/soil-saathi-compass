@@ -169,9 +169,8 @@ const Index = () => {
           </div>
         </div>
       </div>
-      
-      <div className="p-4">
-    <div className="min-h-screen bg-background">
+
+      <div className="min-h-screen bg-background">
       {isSimpleMode ? (
         <SimpleFarmerInterface 
           farmerData={{
@@ -649,9 +648,12 @@ const Index = () => {
             <AccessibilityFeatures />
           </TabsContent>
         </Tabs>
-        </div>
       </div>
-    );
-  };
+        </div>
+      )}
+      </div>
+    </div>
+  );
+};
 
 export default Index;
