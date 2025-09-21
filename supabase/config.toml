@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.enhanced-field-summary]
 verify_jwt = false
+
+[functions.mapbox-token]
+verify_jwt = false
+
+[functions.elevenlabs-speech]
+verify_jwt = false

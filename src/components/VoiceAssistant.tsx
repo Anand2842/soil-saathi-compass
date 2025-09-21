@@ -17,15 +17,18 @@ import {
   Settings
 } from "lucide-react";
 import { toast } from "sonner";
+import { voiceService } from "@/services/voiceService";
 
 interface AudioGuide {
   id: string;
   title: string;
   titleHindi: string;
+  titlePunjabi?: string;
   category: "health" | "farming" | "marketplace" | "navigation";
   duration: string;
   description: string;
   descriptionHindi: string;
+  descriptionPunjabi?: string;
   priority: "high" | "medium" | "low";
   audioUrl?: string;
 }
@@ -45,9 +48,7 @@ const VoiceAssistant = ({ currentData, context = "dashboard" }: VoiceAssistantPr
 
   const languages = [
     { code: "hi", name: "हिन्दी (Hindi)", flag: "🇮🇳" },
-    { code: "bho", name: "भोजपुरी (Bhojpuri)", flag: "🌾" },
-    { code: "ta", name: "தமிழ் (Tamil)", flag: "🇮🇳" },
-    { code: "te", name: "తెలుగు (Telugu)", flag: "🇮🇳" },
+    { code: "pa", name: "ਪੰਜਾਬੀ (Punjabi)", flag: "🌾" },
     { code: "en", name: "English", flag: "🇬🇧" }
   ];
 
@@ -56,10 +57,12 @@ const VoiceAssistant = ({ currentData, context = "dashboard" }: VoiceAssistantPr
       id: "welcome",
       title: "Welcome to Soil Saathi",
       titleHindi: "सॉयल साथी में आपका स्वागत है",
+      titlePunjabi: "ਸਾਇਲ ਸਾਥੀ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ",
       category: "navigation",
       duration: "2:30",
       description: "Learn how to use the app",
       descriptionHindi: "ऐप का उपयोग करना सीखें",
+      descriptionPunjabi: "ਐਪ ਦੀ ਵਰਤੋਂ ਸਿੱਖੋ",
       priority: "high"
     },
     {
@@ -107,56 +110,70 @@ const VoiceAssistant = ({ currentData, context = "dashboard" }: VoiceAssistantPr
   const playAudio = async (audioId: string) => {
     try {
       if (!audioEnabled) {
-        toast.error(currentLanguage === "hi" ? "ऑडियो अक्षम है" : "Audio is disabled");
+        const message = currentLanguage === "hi" ? "ऑडियो अक्षम है" : 
+                       currentLanguage === "pa" ? "ਆਡੀਓ ਬੰਦ ਹੈ" : "Audio is disabled";
+        toast.error(message);
         return;
       }
 
       if (currentlyPlaying === audioId) {
-        // Pause current audio
-        if (audioRef.current) {
-          audioRef.current.pause();
-          setCurrentlyPlaying(null);
-        }
+        // Stop current audio
+        voiceService.stopAudio();
+        setCurrentlyPlaying(null);
         return;
       }
 
       // Stop any currently playing audio
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-
+      voiceService.stopAudio();
       setCurrentlyPlaying(audioId);
       
-      // Simulate text-to-speech for the audio guide
+      // Get the guide content
       const guide = audioGuides.find(g => g.id === audioId);
       if (guide) {
-        const text = currentLanguage === "hi" ? guide.titleHindi : guide.title;
+        let text = guide.title;
+        let description = guide.description;
         
-        // For demo purposes, we'll use browser's speech synthesis
-        if ('speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = currentLanguage === "hi" ? "hi-IN" : "en-US";
-          utterance.rate = voiceSpeed === "slow" ? 0.7 : voiceSpeed === "fast" ? 1.3 : 1;
-          
-          utterance.onend = () => {
-            setCurrentlyPlaying(null);
-          };
-          
-          speechSynthesis.speak(utterance);
-          toast.success(currentLanguage === "hi" ? "ऑडियो चल रहा है" : "Playing audio");
+        if (currentLanguage === "hi") {
+          text = guide.titleHindi;
+          description = guide.descriptionHindi;
+        } else if (currentLanguage === "pa") {
+          text = guide.titlePunjabi || guide.title;
+          description = guide.descriptionPunjabi || guide.description;
         }
+
+        // Combine title and description for more comprehensive audio
+        const fullText = `${text}. ${description}`;
+        
+        // Preprocess text for better pronunciation
+        const processedText = voiceService.preprocessText(fullText, currentLanguage as 'en' | 'hi' | 'pa');
+
+        // Use ElevenLabs for high-quality speech
+        const speechRate = voiceSpeed === "slow" ? 0.8 : voiceSpeed === "fast" ? 1.2 : 1.0;
+        
+        const audioData = await voiceService.textToSpeech(processedText, {
+          language: currentLanguage as 'en' | 'hi' | 'pa',
+          speed: speechRate
+        });
+
+        await voiceService.playAudio(audioData.audioContent);
+        
+        const successMessage = currentLanguage === "hi" ? "ऑडियो चल रहा है" :
+                              currentLanguage === "pa" ? "ਆਡੀਓ ਚੱਲ ਰਿਹਾ ਹੈ" : "Playing audio";
+        toast.success(successMessage);
+        
+        setCurrentlyPlaying(null);
       }
     } catch (error) {
       console.error("Audio playback error:", error);
-      toast.error(currentLanguage === "hi" ? "ऑडियो चलाने में त्रुटि" : "Error playing audio");
+      const errorMessage = currentLanguage === "hi" ? "ऑडियो चलाने में त्रुटि" :
+                          currentLanguage === "pa" ? "ਆਡੀਓ ਚਲਾਉਣ ਵਿੱਚ ਗਲਤੀ" : "Error playing audio";
+      toast.error(errorMessage);
       setCurrentlyPlaying(null);
     }
   };
 
   const stopAudio = () => {
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-    }
+    voiceService.stopAudio();
     setCurrentlyPlaying(null);
   };
 
@@ -170,13 +187,16 @@ const VoiceAssistant = ({ currentData, context = "dashboard" }: VoiceAssistantPr
       const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
       const recognition = new SpeechRecognition();
       
-      recognition.lang = currentLanguage === "hi" ? "hi-IN" : "en-US";
+      recognition.lang = currentLanguage === "hi" ? "hi-IN" : 
+                        currentLanguage === "pa" ? "pa-IN" : "en-US";
       recognition.continuous = false;
       recognition.interimResults = false;
 
       recognition.onstart = () => {
         setIsListening(true);
-        toast.success(currentLanguage === "hi" ? "सुन रहा हूँ..." : "Listening...");
+        const message = currentLanguage === "hi" ? "सुन रहा हूँ..." :
+                       currentLanguage === "pa" ? "ਸੁਣ ਰਿਹਾ ਹਾਂ..." : "Listening...";
+        toast.success(message);
       };
 
       recognition.onresult = (event: any) => {
