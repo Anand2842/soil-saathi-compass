@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          event_name: string
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          properties: Json | null
+          session_id: string | null
+          timestamp: string
+          url: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          event_name: string
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          properties?: Json | null
+          session_id?: string | null
+          timestamp?: string
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          event_name?: string
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          properties?: Json | null
+          session_id?: string | null
+          timestamp?: string
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      backup_metadata: {
+        Row: {
+          backup_size_mb: number | null
+          backup_status: string
+          backup_type: string
+          created_at: string
+          end_time: string | null
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          records_count: number | null
+          start_time: string
+          tables_count: number | null
+        }
+        Insert: {
+          backup_size_mb?: number | null
+          backup_status: string
+          backup_type: string
+          created_at?: string
+          end_time?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          records_count?: number | null
+          start_time?: string
+          tables_count?: number | null
+        }
+        Update: {
+          backup_size_mb?: number | null
+          backup_status?: string
+          backup_type?: string
+          created_at?: string
+          end_time?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          records_count?: number | null
+          start_time?: string
+          tables_count?: number | null
+        }
+        Relationships: []
+      }
       farms: {
         Row: {
           boundary: unknown | null
@@ -106,6 +187,98 @@ export type Database = {
           },
         ]
       }
+      forecasts: {
+        Row: {
+          confidence_intervals: number[] | null
+          confidence_score: number
+          created_at: string | null
+          field_id: string
+          forecast_type: string
+          generated_at: string | null
+          id: string
+          metadata: Json | null
+          model_version: string
+          predictions: number[]
+          valid_until: string | null
+        }
+        Insert: {
+          confidence_intervals?: number[] | null
+          confidence_score: number
+          created_at?: string | null
+          field_id: string
+          forecast_type: string
+          generated_at?: string | null
+          id?: string
+          metadata?: Json | null
+          model_version: string
+          predictions: number[]
+          valid_until?: string | null
+        }
+        Update: {
+          confidence_intervals?: number[] | null
+          confidence_score?: number
+          created_at?: string | null
+          field_id?: string
+          forecast_type?: string
+          generated_at?: string | null
+          id?: string
+          metadata?: Json | null
+          model_version?: string
+          predictions?: number[]
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forecasts_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      government_records: {
+        Row: {
+          created_at: string | null
+          document_url: string | null
+          farmer_id: string
+          id: string
+          record_data: Json
+          record_type: string
+          updated_at: string | null
+          user_id: string
+          verification_status: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          document_url?: string | null
+          farmer_id: string
+          id?: string
+          record_data?: Json
+          record_type: string
+          updated_at?: string | null
+          user_id: string
+          verification_status?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          document_url?: string | null
+          farmer_id?: string
+          id?: string
+          record_data?: Json
+          record_type?: string
+          updated_at?: string | null
+          user_id?: string
+          verification_status?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       marketplace_interactions: {
         Row: {
           created_at: string
@@ -158,6 +331,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      performance_metrics: {
+        Row: {
+          context: Json | null
+          id: string
+          metric_name: string
+          metric_unit: string
+          metric_value: number
+          recorded_at: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          context?: Json | null
+          id?: string
+          metric_name: string
+          metric_unit?: string
+          metric_value: number
+          recorded_at?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          context?: Json | null
+          id?: string
+          metric_name?: string
+          metric_unit?: string
+          metric_value?: number
+          recorded_at?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -350,6 +556,91 @@ export type Database = {
           },
         ]
       }
+      sensor_readings: {
+        Row: {
+          id: string
+          metadata: Json | null
+          sensor_id: string
+          timestamp: string | null
+          unit: string
+          value: number
+        }
+        Insert: {
+          id?: string
+          metadata?: Json | null
+          sensor_id: string
+          timestamp?: string | null
+          unit: string
+          value: number
+        }
+        Update: {
+          id?: string
+          metadata?: Json | null
+          sensor_id?: string
+          timestamp?: string | null
+          unit?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sensor_readings_sensor_id_fkey"
+            columns: ["sensor_id"]
+            isOneToOne: false
+            referencedRelation: "sensors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sensors: {
+        Row: {
+          battery_level: number | null
+          created_at: string | null
+          device_id: string
+          field_id: string
+          id: string
+          last_reading: number | null
+          last_reading_time: string | null
+          metadata: Json | null
+          sensor_type: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          battery_level?: number | null
+          created_at?: string | null
+          device_id: string
+          field_id: string
+          id?: string
+          last_reading?: number | null
+          last_reading_time?: string | null
+          metadata?: Json | null
+          sensor_type: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          battery_level?: number | null
+          created_at?: string | null
+          device_id?: string
+          field_id?: string
+          id?: string
+          last_reading?: number | null
+          last_reading_time?: string | null
+          metadata?: Json | null
+          sensor_type?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sensors_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spatial_ref_sys: {
         Row: {
           auth_name: string | null
@@ -373,6 +664,95 @@ export type Database = {
           srtext?: string | null
         }
         Relationships: []
+      }
+      system_health: {
+        Row: {
+          check_time: string
+          created_at: string
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          response_time_ms: number | null
+          service_name: string
+          status: string
+        }
+        Insert: {
+          check_time?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          service_name: string
+          status: string
+        }
+        Update: {
+          check_time?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          service_name?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      vegetation_analysis: {
+        Row: {
+          analysis_date: string
+          created_at: string | null
+          evi: number | null
+          field_id: string
+          health_status: string
+          id: string
+          metadata: Json | null
+          msavi2: number
+          ndmi: number
+          ndre: number
+          ndvi: number
+          satellite_image_url: string | null
+          savi: number | null
+        }
+        Insert: {
+          analysis_date: string
+          created_at?: string | null
+          evi?: number | null
+          field_id: string
+          health_status: string
+          id?: string
+          metadata?: Json | null
+          msavi2: number
+          ndmi: number
+          ndre: number
+          ndvi: number
+          satellite_image_url?: string | null
+          savi?: number | null
+        }
+        Update: {
+          analysis_date?: string
+          created_at?: string | null
+          evi?: number | null
+          field_id?: string
+          health_status?: string
+          id?: string
+          metadata?: Json | null
+          msavi2?: number
+          ndmi?: number
+          ndre?: number
+          ndvi?: number
+          satellite_image_url?: string | null
+          savi?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vegetation_analysis_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -612,6 +992,15 @@ export type Database = {
       bytea: {
         Args: { "": unknown } | { "": unknown }
         Returns: string
+      }
+      check_system_health: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          last_check: string
+          response_time_ms: number
+          service_name: string
+          status: string
+        }[]
       }
       disablelongtransactions: {
         Args: Record<PropertyKey, never>
@@ -892,6 +1281,15 @@ export type Database = {
         Args: { "": unknown }
         Returns: Json
       }
+      log_analytics_event: {
+        Args: {
+          p_event_name: string
+          p_event_type: string
+          p_properties?: Json
+          p_session_id?: string
+        }
+        Returns: string
+      }
       longtransactionsenabled: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -1084,6 +1482,16 @@ export type Database = {
       }
       postgis_wagyu_version: {
         Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      record_performance_metric: {
+        Args: {
+          p_context?: Json
+          p_metric_name: string
+          p_metric_unit?: string
+          p_metric_value: number
+          p_session_id?: string
+        }
         Returns: string
       }
       spheroid_in: {

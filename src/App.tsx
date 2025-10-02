@@ -5,11 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import AdminDashboard from "./pages/AdminDashboard";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./components/auth/AuthProvider";
 import AuthPage from "./components/auth/AuthPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { logger } from "./utils/monitoring";
+import { registerServiceWorker } from "./utils/serviceWorkerRegistration";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,6 +53,9 @@ window.addEventListener('error', (event) => {
   });
 });
 
+// Register service worker for PWA support and caching
+registerServiceWorker();
+
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
@@ -61,6 +66,11 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
               <Route path="/" element={
                 <ProtectedRoute>
                   <Index />
